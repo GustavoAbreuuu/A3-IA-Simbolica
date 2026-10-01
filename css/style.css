@@ -1,0 +1,93 @@
+:root {
+    --text-color: #f0f0f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+    color: var(--text-color);
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+#labirinto {
+    display: inline-block;
+    margin: 2rem;
+}
+
+table {
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+td {
+    width: 4rem;
+    height: 4rem;
+    text-align: center;
+    vertical-align: middle;
+    border: 0.1rem solid #000;
+    font-size: 1.8rem;
+    font-weight: bold;
+    transition: background-color 0.5s; /* Movimentação suave */
+}
+
+.clear {
+    background-color: #ffffff; /* Posições claras */
+}
+
+.obstacle {
+    background-color: #666666; /* Posições escuras/obstáculos */
+    color: #fff;
+}
+
+.energy {
+    background-color: #00ff00; /* Posições de recuperação de energia */
+}
+
+.start {
+    background-color: #87cefa; /* Posição inicial */
+}
+
+.end {
+    background-color: #ff4500; /* Posição final */
+}
+
+.robot {
+    background-color: #ffd700; /* Cor da célula do robô */
+    color: #000;
+}
+
+#info {
+    text-align: left;
+    max-width: 20rem;
+}
+
+.movements-wrapper {
+    max-height: 20rem;
+    overflow-y: auto;
+    border: 0.1rem solid #ccc;
+    padding: 0.5rem;
+}
+
+#movimentos {
+    list-style: none;
+    padding: 0;
+}

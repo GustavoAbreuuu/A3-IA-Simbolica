@@ -1,6 +1,8 @@
 # IA Simbolica
 Este projeto é um trabalho semestral para a matéria de Inteligência artificial.
 
+> 🔗 **Projeto online:** [Acesse o labirinto na Vercel](https://a3-ia-simbolica-dgo8.vercel.app)
+
 ## Especificações do trabalho
 Considere o problema do labirinto: um robô deve caminhar da entrada do labirinto, até sua saída. O labirinto é representado como uma matriz de tamanho 10x10.
 A entrada do labirinto está na posição (1,1) da matriz (estado inicial), e a saída na posição (10,10) da matriz (estado final). Os possíveis movimentos do robô são: dada à posição atual (i, j), mover-se para a acima (i-1, j), mover-se para baixo (i+1, j), direita (i, j+1) e esquerda (i, j-1).

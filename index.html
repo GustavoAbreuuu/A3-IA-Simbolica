@@ -19,7 +19,15 @@
             <p>Total de Movimentos: <span id="total-movimentos">0</span></p>
         </div>
     </div>
-    <button onclick="gerarLabirinto()">Gerar Novo Labirinto</button>
+    <div class="controls">
+        <label for="algoritmo">Algoritmo de busca:</label>
+        <select id="algoritmo">
+            <option value="bfs">Busca em largura (BFS)</option>
+            <option value="astar">A*</option>
+        </select>
+        <button onclick="gerarLabirinto()">Gerar Novo Labirinto</button>
+    </div>
+    <p id="status" aria-live="polite"></p>
 
     <script src="js/main.js" defer></script>
     <script src="js/maze.js" defer></script>

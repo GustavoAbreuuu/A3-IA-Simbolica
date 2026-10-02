@@ -1,28 +1,36 @@
-// Anima o robô no caminho encontrado e atualiza a energia a cada passo.
+// Anima o caminho validado pelos algoritmos, uma célula a cada 300 ms.
 window.LabirintoApp.Animation = {
     iniciar(caminho) {
         const app = window.LabirintoApp;
         let indice = 0;
-        const executarPasso = () => {
+        const avancar = () => {
             if (indice > 0) {
                 const [linhaAnterior, colunaAnterior] = caminho[indice - 1];
-                this.celula(linhaAnterior, colunaAnterior).classList.remove("robot");
+                this.celula(linhaAnterior, colunaAnterior).classList.remove("robot", "robot-animacao");
             }
             const [linha, coluna] = caminho[indice];
-            this.celula(linha, coluna).classList.add("robot");
-            if (indice > 0) {
-                app.estado.energia = app.Energy.calcularProxima(app.estado.energia, app.estado.labirinto[linha][coluna]);
-                app.UI.atualizarEnergia(app.estado.energia);
-            }
+            this.celula(linha, coluna).classList.add("robot", "robot-animacao");
+            if (indice > 0) app.estado.energia = app.Energy.calcularProxima(app.estado.energia, app.estado.labirinto[linha][coluna]);
+
+            app.UI.adicionarMovimento([linha, coluna], app.estado.energia, indice);
             indice++;
-            if (indice >= caminho.length) this.parar();
+            if (indice >= caminho.length) {
+                this.parar();
+                app.UI.mostrarStatus("Robô chegou ao destino.");
+                return;
+            }
+            app.estado.animacaoId = window.setTimeout(avancar, 300);
         };
-        executarPasso();
-        app.estado.animacaoId = window.setInterval(executarPasso, 500);
+        avancar();
     },
+
     parar() {
         const { estado } = window.LabirintoApp;
-        if (estado.animacaoId !== null) { window.clearInterval(estado.animacaoId); estado.animacaoId = null; }
+        if (estado.animacaoId !== null) window.clearTimeout(estado.animacaoId);
+        estado.animacaoId = null;
     },
-    celula(linha, coluna) { return document.querySelector("table").rows[linha + 1].cells[coluna + 1]; },
+
+    celula(linha, coluna) {
+        return document.querySelector(`td[data-linha="${linha}"][data-coluna="${coluna}"]`);
+    },
 };

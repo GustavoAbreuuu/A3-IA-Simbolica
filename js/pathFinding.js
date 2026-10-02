@@ -1,31 +1,68 @@
-// Encontra o menor caminho válido com busca em largura (BFS).
+// Executa BFS ou A* considerando a energia restante em cada movimento.
 window.LabirintoApp.Pathfinding = {
-    encontrar(labirinto, inicio, fim) {
-        const tamanho = labirinto.length;
-        const fila = [[...inicio]];
-        const visitado = Array.from({ length: tamanho }, () => Array(tamanho).fill(false));
-        const anterior = Array.from({ length: tamanho }, () => Array(tamanho).fill(null));
-        const direcoes = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        visitado[inicio[0]][inicio[1]] = true;
-        for (let indice = 0; indice < fila.length; indice++) {
-            const [linha, coluna] = fila[indice];
-            if (linha === fim[0] && coluna === fim[1]) return this.reconstruir(anterior, fim);
-            for (const [deltaLinha, deltaColuna] of direcoes) {
-                const proximaLinha = linha + deltaLinha;
-                const proximaColuna = coluna + deltaColuna;
-                const dentro = proximaLinha >= 0 && proximaLinha < tamanho && proximaColuna >= 0 && proximaColuna < tamanho;
-                if (dentro && !visitado[proximaLinha][proximaColuna] && labirinto[proximaLinha][proximaColuna] !== 1) {
-                    visitado[proximaLinha][proximaColuna] = true;
-                    anterior[proximaLinha][proximaColuna] = [linha, coluna];
-                    fila.push([proximaLinha, proximaColuna]);
-                }
-            }
-        }
-        return [];
+    encontrar(algoritmo, labirinto, inicio, fim, energiaInicial) {
+        return algoritmo === "astar"
+            ? this.buscarAEstrela(labirinto, inicio, fim, energiaInicial)
+            : this.buscarLargura(labirinto, inicio, fim, energiaInicial);
     },
-    reconstruir(anterior, fim) {
-        const caminho = [];
-        for (let atual = fim; atual !== null; atual = anterior[atual[0]][atual[1]]) caminho.unshift(atual);
-        return caminho;
+
+    buscarLargura(labirinto, inicio, fim, energiaInicial) {
+        const fila = [{ linha: inicio[0], coluna: inicio[1], energia: energiaInicial, caminho: [inicio] }];
+        const melhorEnergia = this.criarMapaDeEnergia(labirinto.length, inicio, energiaInicial);
+
+        for (let indice = 0; indice < fila.length; indice++) {
+            const atual = fila[indice];
+            if (this.chegouAoFim(atual, fim)) return atual;
+            this.expandirVizinhos(fila, atual, labirinto, fim, melhorEnergia, false);
+        }
+        return null;
+    },
+
+    buscarAEstrela(labirinto, inicio, fim, energiaInicial) {
+        const fila = [{ linha: inicio[0], coluna: inicio[1], energia: energiaInicial, caminho: [inicio], custo: 0 }];
+        const melhorEnergia = this.criarMapaDeEnergia(labirinto.length, inicio, energiaInicial);
+
+        while (fila.length > 0) {
+            fila.sort((a, b) => a.custo - b.custo);
+            const atual = fila.shift();
+            if (this.chegouAoFim(atual, fim)) return atual;
+            this.expandirVizinhos(fila, atual, labirinto, fim, melhorEnergia, true);
+        }
+        return null;
+    },
+
+    expandirVizinhos(fila, atual, labirinto, fim, melhorEnergia, usarHeuristica) {
+        const direcoes = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for (const [deltaLinha, deltaColuna] of direcoes) {
+            const linha = atual.linha + deltaLinha;
+            const coluna = atual.coluna + deltaColuna;
+            if (!this.ehCelulaValida(labirinto, linha, coluna)) continue;
+
+            const energia = window.LabirintoApp.Energy.calcularProxima(atual.energia, labirinto[linha][coluna]);
+            if (!window.LabirintoApp.Energy.ehSuficiente(energia) || energia <= melhorEnergia[linha][coluna]) continue;
+
+            melhorEnergia[linha][coluna] = energia;
+            const caminho = [...atual.caminho, [linha, coluna]];
+            const proximo = { linha, coluna, energia, caminho };
+            if (usarHeuristica) {
+                proximo.custo = caminho.length - 1 + Math.abs(fim[0] - linha) + Math.abs(fim[1] - coluna);
+            }
+            fila.push(proximo);
+        }
+    },
+
+    criarMapaDeEnergia(tamanho, inicio, energiaInicial) {
+        const mapa = Array.from({ length: tamanho }, () => Array(tamanho).fill(-Infinity));
+        mapa[inicio[0]][inicio[1]] = energiaInicial;
+        return mapa;
+    },
+
+    ehCelulaValida(labirinto, linha, coluna) {
+        return linha >= 0 && linha < labirinto.length && coluna >= 0
+            && coluna < labirinto.length && labirinto[linha][coluna] !== 1;
+    },
+
+    chegouAoFim(no, fim) {
+        return no.linha === fim[0] && no.coluna === fim[1];
     },
 };

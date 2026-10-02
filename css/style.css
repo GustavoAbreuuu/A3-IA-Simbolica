@@ -91,3 +91,31 @@ td {
     list-style: none;
     padding: 0;
 }
+
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 0 1rem;
+    font-size: 1.6rem;
+}
+
+.controls button,
+.controls select {
+    padding: 0.8rem 1.2rem;
+}
+
+#status {
+    min-height: 2rem;
+    font-size: 1.6rem;
+}
+
+.robot-animacao {
+    animation: pulso-robo 0.3s ease-in-out;
+}
+
+@keyframes pulso-robo {
+    0% { transform: scale(0.8); }
+    100% { transform: scale(1); }
+}

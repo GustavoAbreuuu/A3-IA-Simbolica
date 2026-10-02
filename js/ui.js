@@ -1,4 +1,4 @@
-// Desenha o labirinto e atualiza as informações exibidas.
+// Desenha o labirinto e mantém a interface sincronizada com a execução.
 window.LabirintoApp.UI = {
     renderizarLabirinto(labirinto) {
         const { tamanho, inicio, fim } = window.LabirintoApp.configuracao;
@@ -11,6 +11,7 @@ window.LabirintoApp.UI = {
             cabecalho.appendChild(th);
         }
         tabela.appendChild(cabecalho);
+
         labirinto.forEach((linha, indiceLinha) => {
             const tr = document.createElement("tr");
             const rotulo = document.createElement("th");
@@ -20,6 +21,8 @@ window.LabirintoApp.UI = {
                 const td = document.createElement("td");
                 const ehInicio = indiceLinha === inicio[0] && indiceColuna === inicio[1];
                 const ehFim = indiceLinha === fim[0] && indiceColuna === fim[1];
+                td.dataset.linha = indiceLinha;
+                td.dataset.coluna = indiceColuna;
                 if (ehInicio) { td.className = "start"; td.textContent = "S"; }
                 else if (ehFim) { td.className = "end"; td.textContent = "E"; }
                 else if (valor === 1) { td.className = "obstacle"; td.textContent = "X"; }
@@ -31,15 +34,24 @@ window.LabirintoApp.UI = {
         });
         document.getElementById("labirinto").replaceChildren(tabela);
     },
+
     atualizarInformacoes(caminho, energia, totalMovimentos) {
-        const lista = document.getElementById("movimentos");
-        lista.replaceChildren(...caminho.map(([linha, coluna]) => {
-            const item = document.createElement("li");
-            item.textContent = `${String.fromCharCode(65 + coluna)}${linha + 1}`;
-            return item;
-        }));
+        document.getElementById("movimentos").replaceChildren(...caminho.map((posicao) => this.criarItemMovimento(posicao)));
         document.getElementById("energia").textContent = energia;
         document.getElementById("total-movimentos").textContent = totalMovimentos;
     },
-    atualizarEnergia(energia) { document.getElementById("energia").textContent = energia; },
+
+    adicionarMovimento(posicao, energia, totalMovimentos) {
+        document.getElementById("movimentos").appendChild(this.criarItemMovimento(posicao));
+        document.getElementById("energia").textContent = energia;
+        document.getElementById("total-movimentos").textContent = totalMovimentos;
+    },
+
+    criarItemMovimento([linha, coluna]) {
+        const item = document.createElement("li");
+        item.textContent = `${String.fromCharCode(65 + coluna)}${linha + 1}`;
+        return item;
+    },
+
+    mostrarStatus(mensagem) { document.getElementById("status").textContent = mensagem; },
 };
